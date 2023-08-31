@@ -28,7 +28,7 @@ EventManager.AddListener("UIPlayerDeath", OpenPlayerDeathPanel);
 - Event Tetikleme
 ```csharp
 EventManager.TriggerEvent("PlayerDeath");
-EventManager.TriggerEvent("OpenPlayerDeathPanel");
+EventManager.TriggerEvent("UIPlayerDeath");
 ```
 
 - Event Kaldırma
