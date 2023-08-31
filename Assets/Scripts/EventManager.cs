@@ -39,6 +39,11 @@ public class EventManager : MonoBehaviour
     public List<string> GetEventNames()
     {
         var eventNames = new List<string>();
+        if(_events == null || _eventsWithData == null)
+        {
+            return eventNames;
+        }
+
         foreach (var eventName in _events.Keys)
         {
             eventNames.Add(eventName);
@@ -52,27 +57,27 @@ public class EventManager : MonoBehaviour
         return eventNames;
     }
 
-    public List<string> GetListeners(string eventName)
+    public List<BaseEventInfo> GetEventInfos(string eventName)
     {
-        var listeners = new List<string>();
-        if (_events.TryGetValue(eventName, out var eventInfos))
+        var eventInfos = new List<BaseEventInfo>();
+        if (_events == null || _eventsWithData == null)
         {
-            foreach (var eventInfo in eventInfos)
-            {
-                listeners.Add(eventInfo.Event.GetPersistentMethodName(0));
-            }
+            return eventInfos;
         }
 
-        if (_eventsWithData.TryGetValue(eventName, out var eventInfosWithData))
+        if (_events.TryGetValue(eventName, out var eventInfosList))
         {
-            foreach (var eventInfo in eventInfosWithData)
-            {
-                listeners.Add(eventInfo.Event.GetPersistentMethodName(0));
-            }
+            eventInfos.AddRange(eventInfosList);
         }
 
-        return listeners;
+        if (_eventsWithData.TryGetValue(eventName, out var eventInfosWithDataList))
+        {
+            eventInfos.AddRange(eventInfosWithDataList);
+        }
+
+        return eventInfos;
     }
+
 
     public static void AddListener(string eventName, UnityAction listener, int? priority = 1)
     {
@@ -136,7 +141,7 @@ public class EventManager : MonoBehaviour
             return;
         }
 
-        if (Instance._events.TryGetValue(eventName, out var eventInfos))
+        if (Instance._eventsWithData.TryGetValue(eventName, out var eventInfos))
         {
             var eventInfo = eventInfos.Find(x => x.Event.GetPersistentMethodName(0) == listener.Method.Name);
             if (eventInfo != null)
@@ -156,6 +161,7 @@ public class EventManager : MonoBehaviour
         
         if (Instance._events.TryGetValue(eventName, out var eventInfos))
         {
+            eventInfos.Sort((x, y) => x.Priority.CompareTo(y.Priority));
             foreach (var eventInfo in eventInfos)
             {
                 eventInfo.Event.Invoke();
@@ -173,6 +179,7 @@ public class EventManager : MonoBehaviour
         
         if (Instance._eventsWithData.TryGetValue(eventName, out var eventInfos))
         {
+            eventInfos.Sort((x, y) => x.Priority.CompareTo(y.Priority));
             foreach (var eventInfo in eventInfos)
             {
                 eventInfo.Event.Invoke(eventData);

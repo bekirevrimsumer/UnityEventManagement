@@ -7,6 +7,7 @@ using UnityEngine;
 public class EventManagerEditor : Editor
 {
     private SerializedProperty _eventsProperty;
+       private string _searchEventName = "";
 
     private void OnEnable()
     {
@@ -22,25 +23,48 @@ public class EventManagerEditor : Editor
         EventManager eventManager = (EventManager)target;
 
         EditorGUILayout.LabelField("Event List", EditorStyles.boldLabel);
+
+        EditorGUILayout.BeginHorizontal();
+        _searchEventName = EditorGUILayout.TextField("Search Event:", _searchEventName);
+        EditorGUILayout.EndHorizontal();
         
         //event list
         var eventNames = eventManager.GetEventNames();
         foreach (var eventName in eventNames)
         {
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(eventName);
-            EditorGUILayout.EndHorizontal();
-            
-            //event listeners
-            var listeners = eventManager.GetListeners(eventName);
-            foreach (var listener in listeners)
+            if (!eventName.ToLower().Contains(_searchEventName.ToLower()))
+                continue;
+
+            EditorGUILayout.BeginVertical("Box");
+            EditorGUILayout.LabelField($"Event Name: {eventName}", EditorStyles.boldLabel);
+
+            var eventInfos = eventManager.GetEventInfos(eventName);
+            foreach (var eventInfo in eventInfos)
             {
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField(listener);
-                EditorGUILayout.EndHorizontal();
+                DrawEventInfo(eventInfo);
             }
+            
+            EditorGUILayout.EndVertical();
         }
         
         serializedObject.ApplyModifiedProperties();
+    }
+
+    private void DrawEventInfo(BaseEventInfo eventInfo)
+    {
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField($"Priority: {eventInfo.Priority}");
+        
+        if (eventInfo is EventInfo)
+        {
+            EditorGUILayout.LabelField($"Standard Event");
+        }
+        else if (eventInfo is EventInfo<EventData>)
+        {
+            EventInfo<EventData> eventDataEventInfo = (EventInfo<EventData>)eventInfo;
+            EditorGUILayout.LabelField($"Event with Data of Type: {eventDataEventInfo.Event.GetType().GetGenericArguments()[0]}");
+        }
+        
+        EditorGUILayout.EndHorizontal();
     }
 }

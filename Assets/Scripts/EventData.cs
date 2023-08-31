@@ -29,4 +29,9 @@ public class EventData
     {
         _data.Clear();
     }
+
+    public Dictionary<string, object> GetDictionary()
+    {
+        return _data;
+    }
 }

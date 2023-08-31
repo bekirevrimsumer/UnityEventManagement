@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
         EventManager.AddListener("test", Test);
         EventManager.AddListener("testData", TestData);
         EventManager.AddListener("testPriority", TestPriority, 2); 
-        EventManager.AddListener("testPriority", TestPriority2, 3);
+        EventManager.AddListener("testPriority", TestPriority2, 1);
         EventManager.AddListener("testDataPriority", TestDataPriority, 2);
     }
     
@@ -18,7 +18,6 @@ public class GameManager : MonoBehaviour
     private void Test()
     {
         Debug.Log("Test");
-        EventManager.RemoveListener("Test", Test);
     }
     
     private void TestData(EventData data)
@@ -70,15 +69,5 @@ public class GameManager : MonoBehaviour
             eventData.AddData("test", "Hello World");
             EventManager.TriggerEvent("testDataPriority", eventData);
         }
-        
-        // if (GUI.Button(new Rect(10, 810, 150, 100), "Send Event with Data and Priority and Callback"))
-        // {
-        //     EventData eventData = new EventData();
-        //     eventData.AddData("test", "Hello World");
-        //     EventManager.TriggerEvent("testDataPriorityCallback", eventData, (data) =>
-        //     {
-        //         Debug.Log("Callback: " + data.GetData<string>("test"));
-        //     });
-        // }
     }
 }

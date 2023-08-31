@@ -1,35 +1,47 @@
+using System.Collections.Generic;
 using UnityEngine.Events;
 
-public class EventInfo
+public class BaseEventInfo
 {
-    public UnityEvent Event { get; private set; }
-    public int Priority { get; private set; } = 1; //TR: Öncelik değeri yüksek olan event daha önce çalışır. / EN: The event with a higher priority value runs first.
+    public int Priority { get; private set; } = 1;
 
-    public EventInfo(UnityEvent unityEvent)
+    public BaseEventInfo(int priority)
     {
-        Event = unityEvent;
+        Priority = priority;
     }
 
-    public EventInfo(UnityEvent unityEvent, int priority)
+    public void SetPriority(int priority)
     {
-        Event = unityEvent;
         Priority = priority;
     }
 }
 
-public class EventInfo<T> where T : EventData
+public class EventInfo : BaseEventInfo
 {
-    public UnityEvent<T> Event { get; private set; }
-    public int Priority { get; private set; } = 1;
+    public UnityEvent Event { get; private set; }
 
-    public EventInfo(UnityEvent<T> unityEvent)
+    public EventInfo(UnityEvent unityEvent) : base(1)
     {
         Event = unityEvent;
     }
 
-    public EventInfo(UnityEvent<T> unityEvent, int priority)
+    public EventInfo(UnityEvent unityEvent, int priority) : base(priority)
     {
         Event = unityEvent;
-        Priority = priority;
+    }
+}
+
+public class EventInfo<T> : BaseEventInfo where T : EventData
+{
+    public UnityEvent<T> Event { get; private set; }
+
+    public EventInfo(UnityEvent<T> unityEvent) : base(1)
+    {
+        Event = unityEvent;
+    }
+
+    public EventInfo(UnityEvent<T> unityEvent, int priority) : base(priority)
+    {
+        Event = unityEvent;
     }
 }
